@@ -1,0 +1,59 @@
+﻿@page "/departures"
+@inject HttpClient Http
+<h3>Departures</h3>
+
+@if (departureList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Flight</th>
+                <th>Departure</th>
+                <th>Gate</th>
+                <th>NameOfAircraft</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var departure in departureList)
+            {
+                <tr>
+                    <td>@departure.Id</td>
+                    <td>@departure.FlightName</td>
+                    <td>@departure.TimeOfDeparture</td>
+                    <td>@departure.Gate</td>
+                    <td>@departure.NameOfAircraft</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<DeparturesViewModel>? departureList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            departureList = await Http.GetFromJsonAsync<List<DeparturesViewModel>>("https://flightblazorserverapp.azurewebsites.net/departures");
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    public class DeparturesViewModel
+    {
+        public int Id { get; set; }
+        public string? FlightName { get; set; }
+        public DateTime? TimeOfDeparture { get; set; }
+        public int Gate { get; set; }
+        public string? NameOfAircraft { get; set; }
+    }
+}
